@@ -42,5 +42,6 @@ jobs:
       run: dotnet publish -r linux-x64 -c Release /p:PublishSingleFile=true --self-contained
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: "/home/runner/work/OptechX.Library.Apps.UpdateTool/OptechX.Library.Apps.UpdateTool/OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut.dll"
+        artifacts: "release.tar.gz,/home/runner/work/OptechX.Library.Apps.UpdateTool/OptechX.Library.Apps.UpdateTool/OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut.dll"
+
             
