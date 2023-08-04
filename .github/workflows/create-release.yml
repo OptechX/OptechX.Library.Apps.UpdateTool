@@ -23,6 +23,8 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run: dotnet publish -r linux-x64 -c Release /p:PublishSingleFile=true --self-contained
+    - name: Find
+      run: find . -name "oxlaut"
 
   tagged-release: 
     needs: build
