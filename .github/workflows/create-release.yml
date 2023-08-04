@@ -27,17 +27,18 @@ jobs:
   tagged-release: 
     needs: build
     name: "Tagged Release"
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    runs-on: "ubuntu-latest"
     steps:
-    - uses: actions/checkout@v3
-    - name: GH Release  
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: |
-          OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut
+      - name: "GH Release"
+        run: |
+          echo "Putting together release"
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut
 
 
             
