@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using OptechX.Library.Apps.UpdateTool.Constants;
+﻿using System.Text.Json.Serialization;
 
 namespace OptechX.Library.Apps.UpdateTool.Models
 {
@@ -17,7 +15,6 @@ namespace OptechX.Library.Apps.UpdateTool.Models
 
         [JsonPropertyName("applicationCategory")]
         public string? ApplicationCategory { get; set; }
-        //public ApplicationCategory ApplicationCategory { get; set; }
 
         [JsonPropertyName("publisher")]
         public string? Publisher { get; set; }
@@ -34,11 +31,9 @@ namespace OptechX.Library.Apps.UpdateTool.Models
         [JsonPropertyName("licenseAcceptRequired")]
         public bool LicenseAcceptRequired { get; set; } = false;
 
-        //[JsonConverter(typeof(LcidConverter))]
         [JsonPropertyName("lcid")]
         public List<string>? Lcid { get; set; }
 
-        //[JsonConverter(typeof(CpuArchConverter))]
         [JsonPropertyName("cpuarch")]
         public List<string>? CpuArch { get; set; }
 
@@ -106,80 +101,5 @@ namespace OptechX.Library.Apps.UpdateTool.Models
                 Tags.AddRange(newApp.Tags.Except(Tags));
             }
         }
-
-        //public class CpuArchConverter : JsonConverter<List<CpuArch>>
-        //{
-        //    public override List<CpuArch>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        //    {
-        //        if (reader.TokenType == JsonTokenType.StartArray)
-        //        {
-        //            var archList = new List<CpuArch>();
-        //            while (reader.Read())
-        //            {
-        //                if (reader.TokenType == JsonTokenType.EndArray)
-        //                {
-        //                    return archList;
-        //                }
-
-        //                if (reader.TokenType == JsonTokenType.String && Enum.TryParse<CpuArch>(reader.GetString(), true, out var cpuArch))
-        //                {
-        //                    archList.Add(cpuArch);
-        //                }
-        //            }
-        //        }
-
-        //        return null;
-        //    }
-
-        //    public override void Write(Utf8JsonWriter writer, List<CpuArch> value, JsonSerializerOptions options)
-        //    {
-        //        writer.WriteStartArray();
-
-        //        foreach (var arch in value)
-        //        {
-        //            writer.WriteStringValue(arch.ToString());
-        //        }
-
-        //        writer.WriteEndArray();
-        //    }
-        //}
-
-
-        //public class LcidConverter : JsonConverter<List<Lcid>>
-        //{
-        //    public override List<Lcid>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        //    {
-        //        if (reader.TokenType == JsonTokenType.StartArray)
-        //        {
-        //            var lcidList = new List<Lcid>();
-        //            while (reader.Read())
-        //            {
-        //                if (reader.TokenType == JsonTokenType.EndArray)
-        //                {
-        //                    return lcidList;
-        //                }
-
-        //                if (reader.TokenType == JsonTokenType.String && Enum.TryParse<Lcid>(reader.GetString(), true, out var lcid))
-        //                {
-        //                    lcidList.Add(lcid);
-        //                }
-        //            }
-        //        }
-
-        //        return null;
-        //    }
-
-        //    public override void Write(Utf8JsonWriter writer, List<Lcid> value, JsonSerializerOptions options)
-        //    {
-        //        writer.WriteStartArray();
-
-        //        foreach (var lcid in value)
-        //        {
-        //            writer.WriteStringValue(lcid.ToString());
-        //        }
-
-        //        writer.WriteEndArray();
-        //    }
-        //}
     }
 }
