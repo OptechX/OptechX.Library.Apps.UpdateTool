@@ -23,21 +23,10 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run: dotnet publish -r linux-x64 -c Release /p:PublishSingleFile=true --self-contained
-    - name: Find
-      run: find . -name "oxlaut"
-
-  tagged-release: 
-    needs: build
-    name: "Tagged Release"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Find file
-        run: Get-ChildItem -Path . -Recurse -Filter "oxlaut"
-        shell: pwsh
-      # - name: "GH Release"
-      #   run: |
-      #     zip ./oxlaut.zip ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut
-      #     gh release create v1.0.0 oxlaut.zip --notes "V1.0.0"
-      #   env:
-      #     GITHUB_TOKEN: ${{ github.TOKEN }}
-      #   shell: bash
+    - name: "GH Release"
+      run: |
+        zip ./oxlaut.zip ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut
+        gh release create v1.0.0 ./oxlaut.zip --notes "V1.0.0"
+      env:
+        GITHUB_TOKEN: ${{ github.TOKEN }}
+      shell: bash
