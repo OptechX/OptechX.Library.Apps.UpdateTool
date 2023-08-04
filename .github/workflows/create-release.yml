@@ -46,7 +46,7 @@ jobs:
       run: |
         TAG=${GITHUB_REF#refs/tags/}
         zip ./oxlaut.zip ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut
-        gh release create $TAG./oxlaut.zip --notes $TAG
+        gh release create $TAG ./oxlaut.zip --notes $TAG
       env:
         GITHUB_TOKEN: ${{ github.TOKEN }}
       shell: bash
