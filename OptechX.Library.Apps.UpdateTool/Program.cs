@@ -10,7 +10,7 @@ namespace OptechX.Library.Apps.UpdateTool
         {
             if (args.Any(arg => arg.Contains("--version")))
             {
-                Console.WriteLine("Version: 1.0.7");
+                Console.WriteLine("Version: 1.0.8");
                 return;
             }
 
@@ -88,9 +88,9 @@ namespace OptechX.Library.Apps.UpdateTool
                     {
                         HttpResponseMessage updateResponse = await httpClient.PutAsync(apiUpdateApplicationUrl, new StringContent(JsonSerializer.Serialize(uApp), Encoding.UTF8, "application/json"));
                         updateResponse.EnsureSuccessStatusCode();
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write("Application updated: ");
                         Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write("Application updated: ");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine(uApp.UID);
                         Console.ResetColor();
                     }
