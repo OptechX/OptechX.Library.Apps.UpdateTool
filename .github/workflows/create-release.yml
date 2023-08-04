@@ -35,7 +35,7 @@ jobs:
           - name: "Find oxlaut file"
           id: find_file
           run: |
-            oxlaut_file=$(find ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish -type f -name "oxlaut" | head -n 1)
+            oxlaut_file=$(find . -type f -name "oxlaut" | head -n 1)
             echo "::set-output name=oxlaut_file::$oxlaut_file"
       - name: "Create Release"
         id: create_release
