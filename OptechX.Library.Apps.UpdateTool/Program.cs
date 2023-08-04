@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json;
-using OptechX.Library.Apps.UpdateTool.Constants;
 using OptechX.Library.Apps.UpdateTool.Models;
 
 namespace OptechX.Library.Apps.UpdateTool
@@ -9,42 +8,47 @@ namespace OptechX.Library.Apps.UpdateTool
     {
         static async Task Main(string[] args)
         {
-            if (args.Length != 1 && args.Length != 17)
+            if (args.Any(arg => arg.Contains("--version")))
             {
-                Console.WriteLine("Usage: dotnet oxlaut.dll <app_uid>");
-                Console.WriteLine("or");
-                Console.WriteLine("Usage: dotnet oxlaut.dll <arg1> <arg2> ... <arg15>");
+                Console.WriteLine("Version: 1.0.1");
                 return;
             }
 
-            // declare variables
-            string nUid;
-            ApplicationCategory nApplicationCategory = ApplicationCategory.Default;
-            string nPublisher;
-            string nName;
-            string nVersion;
-            string nCopyright;
-            bool nLicenseAcceptRequired;
-            List<Lcid> nLcid;
-            List<CpuArch> nCpuArch;
-            string nHomepage;
-            string nIcon;
-            string nDocs;
-            string nLicense;
-            List<string> nTags;
-            string nSummary;
-            bool nEnabled;
-            string nBannerIcon;
+            if (args.Any(arg => arg.Contains("--help")))
+            {
+                Console.WriteLine("Usage: oxlaut --json <json_file>");
+                return;
+            }
 
-            nUid = args[0];
+            int index = Array.IndexOf(args, "--json");
+            if (index == -1 || index == args.Length - 1)
+            {
+                // '--json' not found or found at the end of the arguments
+                Console.WriteLine("Usage: oxlaut --json <json_file>");
+                return;
+            }
 
-            // Make the API request
+            string jsonFilePath = args[index + 1];
+            // Use the jsonArgument as needed
+
+            if (!File.Exists(jsonFilePath))
+            {
+                Console.WriteLine($"The file {jsonFilePath} does not exist.");
+                return;
+            }
+
+            // Read the JSON content from the file
+            string jsonContent = File.ReadAllText(jsonFilePath);
+
+            // Deserialize the JSON into the Application class
+            Application jsonApp = JsonSerializer.Deserialize<Application>(jsonContent)!;
+
+            // make the api request
             using (HttpClient httpClient = new HttpClient())
             {
-                string apiUrl = $"https://definitely-firm-chamois.ngrok-free.app/api/Application/byuid/{nUid}";
                 try
                 {
-                    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+                    HttpResponseMessage response = await httpClient.GetAsync($"https://definitely-firm-chamois.ngrok-free.app/api/Application/byuid/{jsonApp.UID}");
                     response.EnsureSuccessStatusCode();
 
                     // Read the response content as a string
@@ -56,75 +60,65 @@ namespace OptechX.Library.Apps.UpdateTool
                     // Use the app object as needed...
                     if (apps.Count > 1)
                     {
+                        Console.WriteLine("More than 1 app error, needs to be investigated");
                         return;
                     }
 
-                    if (args.Length == 17)
+                    // replace existing object with new object and merge data
+                    Application uApp = apps[0];
+                    uApp.ApplicationCategory = jsonApp.ApplicationCategory;
+                    uApp.Publisher = jsonApp.Publisher;
+                    uApp.Name = jsonApp.Name;
+                    uApp.Version = jsonApp.Version;
+                    uApp.Copyright = jsonApp.Copyright;
+                    uApp.LicenseAcceptRequired = jsonApp.LicenseAcceptRequired;
+                    uApp.AddNewLcidValues(jsonApp);
+                    uApp.AddNewCpuArchValues(jsonApp);
+                    uApp.Homepage = jsonApp.Homepage;
+                    uApp.Icon = jsonApp.Icon;
+                    uApp.Docs = jsonApp.Docs;
+                    uApp.License = jsonApp.License;
+                    uApp.AddNewTagsValues(jsonApp);
+                    uApp.Summary = jsonApp.Summary;
+                    uApp.Enabled = jsonApp.Enabled;
+                    uApp.BannerIcon = jsonApp.BannerIcon;
+
+                    string apiUpdateApplicationUrl = $"https://definitely-firm-chamois.ngrok-free.app/api/Application/{uApp.Id}";
+
+                    try
                     {
-                        nUid = args[0];
-                        nApplicationCategory = Enum.Parse<ApplicationCategory>(args[1], true);
-                        nPublisher = args[2];
-                        nName = args[3];
-                        nVersion = args[4];
-                        nCopyright = args[5];
-                        nLicenseAcceptRequired = bool.Parse(args[6]);
-                        nLcid = args[7].Split(',').Select(lcidStr => Enum.Parse<Lcid>(lcidStr, true)).ToList();
-                        nCpuArch = args[8].Split(',').Select(archStr => Enum.Parse<CpuArch>(archStr, true)).ToList();
-                        nHomepage = args[9];
-                        nIcon = args[10];
-                        nDocs = args[11];
-                        nLicense = args[12];
-                        nTags = args[13].Split(',').ToList();
-                        nSummary = args[14];
-                        nEnabled = bool.Parse(args[15]);
-                        nBannerIcon = args[16];
-
-                        Application uApp = apps[0];
-                        uApp.ApplicationCategory = nApplicationCategory;
-                        uApp.Publisher = nPublisher;
-                        uApp.Name = nName;
-                        uApp.Version = nVersion;
-                        uApp.Copyright = nCopyright;
-                        uApp.LicenseAcceptRequired = nLicenseAcceptRequired;
-                        uApp.Lcid = uApp.Lcid?.Union(nLcid.Except(uApp.Lcid ?? Enumerable.Empty<Lcid>())).ToList();
-                        uApp.CpuArch = uApp.CpuArch?.Union(nCpuArch.Except(uApp.CpuArch ?? Enumerable.Empty<CpuArch>())).ToList();
-                        uApp.Homepage = nHomepage;
-                        uApp.Icon = nIcon;
-                        uApp.Docs = nDocs;
-                        uApp.License = nLicense;
-                        uApp.Tags = uApp.Tags?.Union(nTags.Except(uApp.Tags ?? Enumerable.Empty<string>())).ToList();
-                        uApp.Summary = nSummary;
-                        uApp.Enabled = nEnabled;
-                        uApp.BannerIcon = nBannerIcon;
-
-                        string jsonString = JsonSerializer.Serialize(uApp);
-
-                        Console.WriteLine(uApp.Id);
-                        string apiUpdateUrl = $"https://definitely-firm-chamois.ngrok-free.app/api/Application/{uApp.Id}";
-                        try
-                        {
-                            HttpResponseMessage updateResponse = await httpClient.PutAsync(apiUpdateUrl, new StringContent(jsonString, Encoding.UTF8, "application/json"));
-                            updateResponse.EnsureSuccessStatusCode();
-
-                            return;
-                        }
-                        catch (HttpRequestException ex)
-                        {
-                            Console.WriteLine($"Error: {ex.Message}");
-                        }
+                        HttpResponseMessage updateResponse = await httpClient.PutAsync(apiUpdateApplicationUrl, new StringContent(JsonSerializer.Serialize(uApp), Encoding.UTF8, "application/json"));
+                        updateResponse.EnsureSuccessStatusCode();
+                        Console.WriteLine("Application updated");
                     }
-                    else
+                    catch (HttpRequestException ex)
                     {
-                        return;
+                        Console.WriteLine($"Error: {ex.Message}");
+                        Console.WriteLine($"Unable to update application: {uApp.UID}");
                     }
-                    
+
+                    return;
                 }
-                catch (HttpRequestException ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine($"Error: {ex.Message}");
+
+                    string apiNewApplicationUrl = $"https://definitely-firm-chamois.ngrok-free.app/api/Application";
+
+                    try
+                    {
+                        HttpResponseMessage updateResponse = await httpClient.PostAsync(apiNewApplicationUrl, new StringContent(JsonSerializer.Serialize(jsonApp), Encoding.UTF8, "application/json"));
+                        updateResponse.EnsureSuccessStatusCode();
+                        Console.WriteLine("Posted new application");
+                    }
+                    catch (HttpRequestException ex2)
+                    {
+                        Console.WriteLine($"Error: {ex2.Message}");
+                    }
+
+                    return;
                 }
             }
         }
     }
 }
-
