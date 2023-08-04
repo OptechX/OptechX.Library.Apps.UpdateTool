@@ -34,11 +34,11 @@ jobs:
       - name: "GH Release"
         run: |
           echo "Putting together release"
-          - name: "Find oxlaut file"
-          id: find_file
-          run: |
-            oxlaut_file=$(find . -type f -name "oxlaut" | head -n 1)
-            echo "::set-output name=oxlaut_file::$oxlaut_file"
+      - name: "Find oxlaut file"
+        id: find_file
+        run: |
+          oxlaut_file=$(find . -type f -name "oxlaut" | head -n 1)
+          echo "::set-output name=oxlaut_file::$oxlaut_file"
       - name: Write output
         run: |
           echo "${{ steps.find_file.outputs.oxlaut_file }}"
