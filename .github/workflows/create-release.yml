@@ -32,13 +32,18 @@ jobs:
       - name: "GH Release"
         run: |
           echo "Putting together release"
-      - uses: "marvinpinto/action-automatic-releases@latest"
+          - name: "Find oxlaut file"
+          id: find_file
+          run: |
+            oxlaut_file=$(find ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish -type f -name "oxlaut" | head -n 1)
+            echo "::set-output name=oxlaut_file::$oxlaut_file"
+      - name: "Create Release"
+        id: create_release
+        uses: "marvinpinto/action-automatic-releases@latest"
         if: startsWith(github.ref, 'refs/tags/')
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          files: |
-            ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut
-
+          files: "${{ steps.find_file.outputs.oxlaut_file }}"
 
             
