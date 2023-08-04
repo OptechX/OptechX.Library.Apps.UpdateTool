@@ -10,7 +10,7 @@ namespace OptechX.Library.Apps.UpdateTool
         {
             if (args.Any(arg => arg.Contains("--version")))
             {
-                Console.WriteLine("Version: 1.0.1");
+                Console.WriteLine("Version: 1.0.3");
                 return;
             }
 
@@ -89,7 +89,7 @@ namespace OptechX.Library.Apps.UpdateTool
                     {
                         HttpResponseMessage updateResponse = await httpClient.PutAsync(apiUpdateApplicationUrl, new StringContent(JsonSerializer.Serialize(uApp), Encoding.UTF8, "application/json"));
                         updateResponse.EnsureSuccessStatusCode();
-                        Console.WriteLine("Application updated");
+                        Console.WriteLine($"Application updated: {uApp.UID}");
                     }
                     catch (HttpRequestException ex)
                     {
