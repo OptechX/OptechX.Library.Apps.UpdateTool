@@ -31,10 +31,13 @@ jobs:
     name: "Tagged Release"
     runs-on: "ubuntu-latest"
     steps:
-      - name: "GH Release"
-        run: |
-          zip ./oxlaut.zip ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut
-          gh release create v1.0.0 oxlaut.zip --notes "V1.0.0"
-        env:
-          GITHUB_TOKEN: ${{ github.TOKEN }}
-        shell: bash
+      - name: Find file
+        run: Get-ChildItem -Path . -Recurse -Filter "oxlaut"
+        shell: pwsh
+      # - name: "GH Release"
+      #   run: |
+      #     zip ./oxlaut.zip ./OptechX.Library.Apps.UpdateTool/bin/Release/net7.0/linux-x64/publish/oxlaut
+      #     gh release create v1.0.0 oxlaut.zip --notes "V1.0.0"
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.TOKEN }}
+      #   shell: bash
