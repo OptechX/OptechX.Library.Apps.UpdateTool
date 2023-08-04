@@ -10,7 +10,7 @@ namespace OptechX.Library.Apps.UpdateTool
         {
             if (args.Any(arg => arg.Contains("--version")))
             {
-                Console.WriteLine("Version: 1.0.4");
+                Console.WriteLine("Version: 1.0.5");
                 return;
             }
 

@@ -34,7 +34,7 @@ namespace OptechX.Library.Apps.UpdateTool.Models
         [JsonPropertyName("lcid")]
         public List<string>? Lcid { get; set; }
 
-        [JsonPropertyName("cpuarch")]
+        [JsonPropertyName("cpuArch")]
         public List<string>? CpuArch { get; set; }
 
         [JsonPropertyName("homepage")]
