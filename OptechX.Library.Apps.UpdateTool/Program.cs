@@ -8,15 +8,19 @@ namespace OptechX.Library.Apps.UpdateTool
     {
         static async Task Main(string[] args)
         {
+            string baseEndpoint = "https://definitely-firm-chamois.ngrok-free.app/api/Application";
+            string jsonFilePath = string.Empty;
+            string apiHeader = string.Empty;
+
             if (args.Any(arg => arg.Contains("--version")))
             {
-                Console.WriteLine("Version: 1.0.8");
+                Console.WriteLine("Version: 1.1.0");
                 return;
             }
 
             if (args.Any(arg => arg.Contains("--help")))
             {
-                Console.WriteLine("Usage: oxlaut --json <json_file>");
+                Console.WriteLine("Usage: oxlaut --json <json_file> [--endpoint <endpoint_Uri>] [--header <X-AppsLibrary-API-Key>]");
                 return;
             }
 
@@ -27,8 +31,21 @@ namespace OptechX.Library.Apps.UpdateTool
                 Console.WriteLine("Usage: oxlaut --json <json_file>");
                 return;
             }
+            jsonFilePath = args[index + 1];
 
-            string jsonFilePath = args[index + 1];
+            // Check for '--endpoint' argument
+            int endpointIndex = Array.IndexOf(args, "--endpoint");
+            if (endpointIndex != -1 && endpointIndex < args.Length - 1)
+            {
+                baseEndpoint = args[endpointIndex + 1];
+            }
+
+            // Check for '--header' argument
+            int headerIndex = Array.IndexOf(args, "--header");
+            if (headerIndex != -1 && headerIndex < args.Length - 1)
+            {
+                apiHeader = args[headerIndex + 1];
+            }
 
             if (!File.Exists(jsonFilePath))
             {
@@ -47,7 +64,13 @@ namespace OptechX.Library.Apps.UpdateTool
             {
                 try
                 {
-                    HttpResponseMessage response = await httpClient.GetAsync($"https://definitely-firm-chamois.ngrok-free.app/api/Application/byuid/{jsonApp.UID}");
+                    // Add X-AppsLibrary-API custom header
+                    if (!string.IsNullOrEmpty(apiHeader))
+                    {
+                        httpClient.DefaultRequestHeaders.Add("X-AppsLibrary-API-Key", apiHeader);
+                    }
+                    
+                    HttpResponseMessage response = await httpClient.GetAsync($"{baseEndpoint}/byuid/{jsonApp.UID}");
                     response.EnsureSuccessStatusCode();
 
                     // Read the response content as a string
@@ -82,7 +105,7 @@ namespace OptechX.Library.Apps.UpdateTool
                     uApp.Enabled = jsonApp.Enabled;
                     uApp.BannerIcon = jsonApp.BannerIcon;
 
-                    string apiUpdateApplicationUrl = $"https://definitely-firm-chamois.ngrok-free.app/api/Application/{uApp.Id}";
+                    string apiUpdateApplicationUrl = $"{baseEndpoint}/{uApp.Id}";
 
                     try
                     {
@@ -106,7 +129,7 @@ namespace OptechX.Library.Apps.UpdateTool
                 {
                     Console.WriteLine($"Error: {ex.Message}");
 
-                    string apiNewApplicationUrl = $"https://definitely-firm-chamois.ngrok-free.app/api/Application";
+                    string apiNewApplicationUrl = $"{baseEndpoint}";
 
                     try
                     {
